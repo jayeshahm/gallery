@@ -7,7 +7,10 @@ const imageSearchReducer = (state = storeState, action) => {
         case "SET_IMAGE_DATA":
             return{
                 ...state,
-                data:action.data
+                data:{
+                    ...state.data,
+                    [action.category]: action.data
+                }
             }
         default:
             return state

@@ -1,29 +1,52 @@
 import React from "react";
 import ImageList from "@mui/material/ImageList";
 import ImageListItem from "@mui/material/ImageListItem";
-import { useSelector } from 'react-redux';
+import { useSelector } from "react-redux";
+import { categories } from "../../constants/searchConstants";
+import GetImageData from "../../service/getImageData";
 
-const Gallery = () => {
+const Gallery = (props) => {
+  let category = props.category;
+  let imageData;
+  let storeData = useSelector (state=>state?.data);
+  if(categories.includes(category)){
+    imageData = storeData;
+  }else{
+   imageData =  GetImageData(category);
+  }
+  
+  
+  
 
-  const imageData = useSelector (state=>state);
 
-  console.log("Image Data", imageData.data)
-
-
-  return ( imageData && 
-    
-    <ImageList sx={{ width: 1, height: 1 }} cols={4}>
-      {imageData?.data.map((item, index) => (
+  return (
+    <div>
+      <div>
+        <h2 style={
+          {
+            display: "flex",
+            justifyContent: "center"
+          }
+        }>{category}</h2>
+      </div>
+      <div>{imageData && imageData[category] && 
+      <ImageList  cols={4}>
+      {imageData[category]?.map((item, index) => (
         <ImageListItem key={index}>
           <img
-            srcSet={`${item.img}?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
-            src={`${item.img}?w=164&h=164&fit=crop&auto=format`}
+          style={{width:250, height:200, paddingLeft:40, paddingBottom: 10}}
+            srcSet={`${item.img}`}
+            src={`${item.img}`}
             alt={item.title}
             loading="lazy"
           />
         </ImageListItem>
       ))}
-    </ImageList>
+    </ImageList>}
+      
+      </div>
+    </div>
+    
   );
 };
 

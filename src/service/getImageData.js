@@ -1,18 +1,14 @@
-import axios from "axios"
-import { useEffect } from "react"
-import { useDispatch } from 'react-redux'
-import { setImageData } from "../store/action/imageSearchAction";
+import axios from "axios";
+import { useEffect, useState } from "react";
 
-
-
-const GetImageData = (searchText) => {
+const GetImageData = async (searchText) => {
   let data = [];
+  // const [details, setDetails] = useState([]);
 
-  const dispatch = useDispatch();
-
-    const url = "https://www.flickr.com/services/rest/?method=flickr.photos.search";
-
-    axios.get(url, {
+  const url =
+    "https://www.flickr.com/services/rest/?method=flickr.photos.search";
+  await axios
+    .get(url, {
       params: {
         api_key: process.env.REACT_APP_SECRET_NAME,
         text: searchText,
@@ -20,28 +16,37 @@ const GetImageData = (searchText) => {
         format: "json",
         nojsoncallback: 1,
       },
-    }).then((response)=>{
-        let imageData = response.data.photos.photo;
-
-        let srcUrl = '';
-       
-
-        imageData.map((image) => {
-        srcUrl = 'https://farm'+image.farm+'.staticflickr.com/'+image.server+'/'+image.id+'_'+image.secret+'.jpg'
-        let dataObj = {
-            img: srcUrl,
-            title: searchText
-        }
-        if(!data.some(el => el.img === dataObj.img)){
-          data.push(dataObj);
-        }
-        
-        })
-    }).catch((error)=>{
-        console.log(error);
     })
-  
-  return data;
+    .then((res) => {
+      // successfully received data, dispatch a new action with our data
+      let imageData = res.data.photos.photo;
+
+      let srcUrl = "";
+      data = [];
+      imageData.map((image) => {
+        srcUrl =
+          "https://farm" +
+          image.farm +
+          ".staticflickr.com/" +
+          image.server +
+          "/" +
+          image.id +
+          "_" +
+          image.secret +
+          ".jpg";
+        let dataObj = {
+          img: srcUrl,
+          title: searchText,
+        };
+        data.push(dataObj);
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+    console.log("Data==>",data)
+
+  return { [searchText]: data };
 };
 
 export default GetImageData;

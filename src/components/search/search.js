@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, { useEffect, useState } from "react";
 import IconButton from "@mui/material/IconButton";
 import SearchIcon from "@mui/icons-material/Search";
 import Box from "@mui/material/Box";
@@ -6,18 +6,23 @@ import TextField from "@mui/material/TextField";
 import Gallery from "../gallery/gallery";
 import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
-import GetImageData from "../../service/getImageData";
 
-import { useDispatch } from 'react-redux'
-import { setImageData } from "../../store/action/imageSearchAction";
+import { useDispatch } from "react-redux";
+import {
+  getImageData,
+} from "../../store/action/imageSearchAction";
+import { categories } from "../../constants/searchConstants";
 
 const Search = () => {
+  const [category, setCategory] = useState("movies");
+  const dispatch = useDispatch();
 
- let data = GetImageData('festivals');
- const dispatch = useDispatch();
- 
- dispatch(setImageData(data));
-
+  useEffect(() => {
+    if(categories.includes(category)){
+      dispatch(getImageData(category));
+    }
+    
+  }, [category]);
 
   return (
     <div>
@@ -33,12 +38,14 @@ const Search = () => {
           fullWidth
           label="Search Images"
           id="fullWidth"
+          onChange={(event) => setCategory(event.target.value)}
           InputProps={{
             endAdornment: (
               <IconButton
                 color="primary"
                 aria-label="search location"
                 position="end"
+                disabled
               >
                 <SearchIcon />
               </IconButton>
@@ -52,16 +59,24 @@ const Search = () => {
         sx={{
           display: "flex",
           justifyContent: "center",
-          paddingTop: 5
+          paddingTop: 5,
         }}
       >
         <a>Pupoular Searches</a>
-        <Button variant="outlined">Festivals</Button>
-        <Button variant="outlined">Mountains</Button>
-        <Button variant="outlined">Corals</Button>
-        <Button variant="outlined">Food</Button>
+        <Button variant="outlined" onClick={() => setCategory("festivals")}>
+          Festivals
+        </Button>
+        <Button variant="outlined" onClick={() => setCategory("mountains")}>
+          Mountains
+        </Button>
+        <Button variant="outlined" onClick={() => setCategory("corals")}>
+          Corals
+        </Button>
+        <Button variant="outlined" onClick={() => setCategory("food")}>
+          Food
+        </Button>
       </Stack>
-      <Gallery ></Gallery>
+      <Gallery category={category}></Gallery>
     </div>
   );
 };
