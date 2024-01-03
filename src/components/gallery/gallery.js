@@ -6,17 +6,17 @@ import { categories } from "../../constants/searchConstants";
 import GetImageData from "../../service/getImageData";
 
 const Gallery = (props) => {
+  
   let category = props.category;
   let imageData;
   let storeData = useSelector (state=>state?.data);
+  let apiData =  GetImageData(category, props.useSearch);
+  
   if(categories.includes(category)){
     imageData = storeData;
-  }else{
-   imageData =  GetImageData(category);
+  }else if(props.useSearch){
+    imageData = apiData;
   }
-  
-  
-  
 
 
   return (

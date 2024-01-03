@@ -1,9 +1,13 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 
-const GetImageData = async (searchText) => {
+const GetImageData = async (searchText, useSearch) => {
   let data = [];
-  // const [details, setDetails] = useState([]);
+  const [details, setDetails] = useState([]);
+
+  if(!useSearch){
+    return {}
+  }
 
   const url =
     "https://www.flickr.com/services/rest/?method=flickr.photos.search";

@@ -7,7 +7,7 @@ import Gallery from "../gallery/gallery";
 import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
 
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   getImageData,
 } from "../../store/action/imageSearchAction";
@@ -15,11 +15,33 @@ import { categories } from "../../constants/searchConstants";
 
 const Search = () => {
   const [category, setCategory] = useState("movies");
+
+  let storeData = useSelector (state=>state?.data);
+  const [data, setData] = useState(storeData);
+
+  const [useSearch, setUseSearch] = useState(false);
+   
   const dispatch = useDispatch();
+
+  function handleInputChange(text) {
+    
+    if(categories.includes(text)){
+      setUseSearch(false);
+      dispatch(getImageData(text));
+    }else{
+      setUseSearch(true);
+      setCategory(text);
+    }
+  }
 
   useEffect(() => {
     if(categories.includes(category)){
-      dispatch(getImageData(category));
+      if(!storeData){
+        dispatch(getImageData(category));
+      }else if(storeData && !storeData[category]){
+        dispatch(getImageData(category));
+      }
+      setData(storeData)
     }
     
   }, [category]);
@@ -38,7 +60,7 @@ const Search = () => {
           fullWidth
           label="Search Images"
           id="fullWidth"
-          onChange={(event) => setCategory(event.target.value)}
+          onChange={(event) => handleInputChange(event.target.value)}
           InputProps={{
             endAdornment: (
               <IconButton
@@ -76,7 +98,7 @@ const Search = () => {
           Food
         </Button>
       </Stack>
-      <Gallery category={category}></Gallery>
+      <Gallery category={category} useSearch={useSearch}></Gallery>
     </div>
   );
 };
