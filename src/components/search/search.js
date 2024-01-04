@@ -26,6 +26,7 @@ const Search = () => {
   function handleInputChange(text) {
     
     if(categories.includes(text)){
+      setCategory(text);
       setUseSearch(false);
       dispatch(getImageData(text));
     }else{

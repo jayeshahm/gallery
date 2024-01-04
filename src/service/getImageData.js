@@ -1,17 +1,15 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 
-const GetImageData = async (searchText, useSearch) => {
+const GetImageData = (searchText, useSearch) => {
   let data = [];
-  const [details, setDetails] = useState([]);
 
-  if(!useSearch){
-    return {}
-  }
+  const [details, setDetails] = useState([])
 
-  const url =
+   async function fetchData(searchText){
+    const url =
     "https://www.flickr.com/services/rest/?method=flickr.photos.search";
-  await axios
+   return await axios
     .get(url, {
       params: {
         api_key: process.env.REACT_APP_SECRET_NAME,
@@ -25,10 +23,10 @@ const GetImageData = async (searchText, useSearch) => {
       // successfully received data, dispatch a new action with our data
       let imageData = res.data.photos.photo;
 
-      let srcUrl = "";
-      data = [];
+      
+      let data = [];
       imageData.map((image) => {
-        srcUrl =
+        let srcUrl =
           "https://farm" +
           image.farm +
           ".staticflickr.com/" +
@@ -44,13 +42,23 @@ const GetImageData = async (searchText, useSearch) => {
         };
         data.push(dataObj);
       });
+      return data;
+      
     })
     .catch((err) => {
       console.log(err);
     });
-    console.log("Data==>",data)
+  }
 
-  return { [searchText]: data };
+  useEffect(()=>{
+    if(!useSearch){
+      setDetails([])
+    }else{
+     fetchData(searchText).then((res) => {setDetails(res)})
+    }
+  },[searchText])
+
+  return { [searchText]: details };
 };
 
 export default GetImageData;
